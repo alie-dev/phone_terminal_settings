@@ -1,0 +1,19 @@
+# see https://github.com/sigoden/aichat/blob/main/config.example.yaml
+
+model: openai:gpt-4.1
+clients:
+  - type: openai
+    api_key: <insert key here>
+
+repl_prelude: "role:english_teacher"
+#save
+save: true
+save_session: true
+compress_threshold: 4000
+
+# web searching
+function_calling: true
+use_tools: web_search
+functions_dir: ~/.config/aichat/functions
+mapping_tools:
+  web_search: web_search

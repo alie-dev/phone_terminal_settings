@@ -1,0 +1,1 @@
+/data/data/com.termux/files/home/development/essential/llm-functions/tools/web_search_aichat.sh
