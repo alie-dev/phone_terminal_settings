@@ -318,6 +318,9 @@ map('n', '<leader>t', function()
   vim.cmd('belowright ' .. terminal_height .. 'split | terminal')
 end, { silent = true })
 
+vim.keymap.set('t', '<leader>tt', '<C-\\><C-n>', { noremap = true, silent = true })
+
+
 -- =========================================================
 -- CodeCompanion
 -- =========================================================
