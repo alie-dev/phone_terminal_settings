@@ -164,6 +164,10 @@ map({ "n", "x" }, "<M-k>", "<C-u>zz", { noremap = true, silent = true, desc = "H
 
 -- 전체 선택
 map({ "n", "x" }, "<M-a>", "ggVG", { desc = "Select all" })
+map({ "x" }, "c", "\"_c", { desc = "Select all" })
+
+-- 줄 복사
+map({ "n", "x" }, "<M-y>", ":t.<CR>", { desc = "Select all" })
 
 -- =========================================================
 -- LSP / Telescope
