@@ -7,6 +7,9 @@ vim.opt.laststatus = 3
 vim.opt.cmdheight = 0
 vim.opt.showmode = false
 
+-- 스왑파일 안생기게 (복구 안됌)
+vim.opt.swapfile =false
+
 vim.opt.linespace = 50
 -- init.lua 등
 vim.opt.expandtab = true -- 탭 대신 스페이스 입력
@@ -15,9 +18,12 @@ vim.opt.tabstop = 2 -- 탭 표시 폭
 vim.opt.softtabstop = 2
 
 
+
 -- 더 신뢰도 높게: 외부 변경 자동 반영
 vim.opt.autoread = true
 vim.opt.updatetime = 1000  -- CursorHold/InsertHold가 1초에 한 번씩 트리거되도록
+
+
 
 local function safe_checktime()
   -- 현재 버퍼가 수정 중이면 자동 덮어쓰기 금지
