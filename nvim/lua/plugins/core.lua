@@ -53,10 +53,11 @@ return {
 
       filesystem = {
         follow_current_file = { enabled = false }, -- 다시 열림 방지
-        filtered_items = { hide_gitignored = false },
+        filtered_items = { hide_gitignored = false, hide_dotfiles = false},
       },
 
       window = { width = 26; },
+      
     })
   end,
 },
