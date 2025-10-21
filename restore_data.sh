@@ -226,6 +226,7 @@ else
   warn "./aichat/config.yaml 없음 → 키 반영 생략"
 fi
 
+
 # (3) aichat CLI 설치 + functions 병합 설치
 install_aichat_cli
 deploy_aichat_functions
@@ -239,7 +240,7 @@ mason_install
 
 # (6) ttx(fonttools) 준비
 install_fonttools_ttx
-
+npm install ts-morph
 echo
 ok "Restore + Install complete."
 echo "Restored from ./termux, ./nvim, ./aichat, ./tmux"
