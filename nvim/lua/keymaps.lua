@@ -35,7 +35,13 @@ map(
 )
 
 -- 빈 줄 추가 / 라인 삭제
-map("n", "<M-CR>", "o<Esc>", { silent = true, desc = "Add blank line below (stay)" })
+map({"n", "x"}, "<M-CR>", "o<Esc>", { silent = true, desc = "Add blank line below (stay)" })
+-- Insert 모드: 현재 줄 아래에 빈 줄 추가 후 insert 모드에서 유지
+map("i", "<M-CR>", function()
+  -- 현재 줄의 마지막으로 이동해서  줄 바꿈을 실행한 뒤 insert 모드 진입
+  return "<Esc>o"
+end, { expr = true, silent = true, desc = "Add blank line below and stay in insert mode" })
+
 map("n", "<M-BS>", "dd", { silent = true, desc = "Delete line (dd)" })
 
 -- Bufferline 숫자 점프 (Space+1..9)
@@ -322,7 +328,7 @@ map('n', '<leader>t', function()
   vim.cmd('belowright ' .. terminal_height .. 'split | terminal')
 end, { silent = true })
 
-vim.keymap.set('t', '<leader>tt', '<C-\\><C-n>', { noremap = true, silent = true })
+map('t', '<leader>tt', '<C-\\><C-n>', { noremap = true, silent = true })
 
 
 -- =========================================================
