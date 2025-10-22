@@ -219,6 +219,7 @@ sync_dir_to_home "./nvim"   "$HOME/.config/nvim"
 sync_dir_to_home "./aichat/functions" "$HOME/.config/aichat/functions"
 sync_dir_to_home "./aichat/roles"     "$HOME/.config/aichat/roles"
 copy_file_to_home "./tmux/.tmux.conf" "$HOME/.tmux.conf"
+copy_file_to_home "./wezterm/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
 
 # aichat 키 반영
 if [ -f "./aichat/config.yaml" ]; then
@@ -243,9 +244,27 @@ nvim_lazy_sync
 mason_install
 install_fonttools_ttx
 
+#!/bin/bash
+
+# Anthropic API 키를 사용자로부터 입력받기
+echo "Anthropic API 키를 입력하세요:"
+read -s anthropic_key
+
+# API 키를 임시 파일에 저장
+echo "$anthropic_key" > ~/.anthropic-api-key
+
+# GPG로 파일을 AES256 암호화
+echo "암호화를 위한 패스워드를 설정하세요:"
+gpg --symmetric --cipher-algo AES256 ~/.anthropic-api-key
+
+# 원본 파일 삭제
+rm ~/.anthropic-api-key
+
+echo "API 키가 암호화되어 ~/.anthropic-api-key.gpg 파일로 저장되었습니다."
+
 echo
 ok "Restore + Install complete (minimal)."
-echo "Restored from ./termux, ./nvim, ./aichat, ./tmux"
+echo "Restored from ./termux, ./nvim, ./aichat, ./tmux, ./wezterm"
 echo "Mason packages: ${MASON_PKGS:-<none>}"
 echo "Aliases ready: tfull / tunfull / tftoggle / tfstatus"
 

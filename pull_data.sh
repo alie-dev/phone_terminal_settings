@@ -48,6 +48,15 @@ copy_if_exists "$HOME/.termux/font.ttf"              "$DEST_ROOT/termux/font.ttf
 copy_if_exists "$HOME/.termux/termux.properties"     "$DEST_ROOT/termux/termux.properties"
 copy_if_exists "$HOME/.termux/toggle_fullscreen.py"  "$DEST_ROOT/termux/toggle_fullscreen.py"
 copy_if_exists "$HOME/.termux/update_font_height.py" "$DEST_ROOT/termux/update_font_height.py"
+#!/bin/bash
+
+# Create the wezterm config directory structure
+mkdir -p wezterm/
+
+# Copy the wezterm configuration file
+cp ~/.config/wezterm/wezterm.lua wezterm/
+
+echo "Wezterm config copied to wezterm/.config/wezterm/"
 
 # 2) Neovim 전체(내용물) -> ./nvim
 sync_dir "$HOME/.config/nvim" "$DEST_ROOT/nvim"

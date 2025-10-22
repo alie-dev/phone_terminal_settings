@@ -1,4 +1,4 @@
--- webdev.lua (ts_ls → vtsls 전환본 · 나머지 그대로)
+-- webdev.lua
 
 return {
 	---------------------------------------------------------------------------
@@ -115,7 +115,7 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "neovim/nvim-lspconfig" },
 		opts = {
-			ensure_installed = { "vtsls", "tailwindcss", "eslint", "lua_ls" }, -- ts_ls → vtsls
+			ensure_installed = { "vtsls", "tailwindcss", "eslint", "lua_ls" },
 			automatic_installation = true,
 		},
 	},
@@ -336,7 +336,10 @@ return {
 				http = {
 					anthropic = function()
 						return require("codecompanion.adapters").extend("anthropic", {
-							env = { api_key = vim.env.ANTHROPIC_API_KEY },
+							env = {
+								api_key = "cmd:gpg --decrypt ~/.anthropic-api-key.gpg 2>/dev/null",
+							},
+							--	env = { api_key = os.getenv("ANTHROPIC_API_KEY") },
 							-- endpoint = "https://api.anthropic.com/v1/messages",
 						})
 					end,
@@ -344,16 +347,10 @@ return {
 				},
 			},
 			strategies = {
-				chat = {
-					adapter = "anthropic",
-					model = "claude-opus-4-1",
-					params = { max_output_tokens = 32000 },
-				},
-				inline = {
-					adapter = "anthropic",
-					model = "claude-sonnet-4",
-					params = { max_output_tokens = 64000 },
-				},
+				-- copilot 사용하지 않게 명시
+				chat = { adapter = "anthropic" },
+				inline = { adapter = "anthropic" },
+				agent = { adapter = "anthropic" },
 			},
 		},
 	},
