@@ -1,4 +1,4 @@
--- webdev.lua (완성본)
+-- webdev.lua (ts_ls → vtsls 전환본 · 나머지 그대로)
 
 return {
 	---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ return {
 		build = ":TSUpdate",
 		opts = {
 			ensure_installed = {
-        "svelte",
+				"svelte",
 				"typescript",
 				"tsx",
 				"javascript",
@@ -115,7 +115,7 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "neovim/nvim-lspconfig" },
 		opts = {
-			ensure_installed = { "ts_ls", "tailwindcss", "eslint", "lua_ls" },
+			ensure_installed = { "vtsls", "tailwindcss", "eslint", "lua_ls" }, -- ts_ls → vtsls
 			automatic_installation = true,
 		},
 	},
@@ -132,43 +132,32 @@ return {
 
 			local function on_attach(_, _) end
 
-			-- typescript-language-server 경로 자동 탐색 (+ mason 폴백)
-			local function ts_cmd()
-				local exe = vim.fn.exepath("typescript-language-server")
-				if exe == "" then
-					local mason = vim.fn.stdpath("data") .. "/mason/bin/typescript-language-server"
-					if vim.fn.executable(mason) == 1 then
-						exe = mason
-					end
-				end
-				if exe == "" then
-					vim.schedule(function()
-						vim.notify(
-							"[ts_ls] typescript-language-server not found. Install via :Mason or `npm i -g typescript typescript-language-server`",
-							vim.log.levels.ERROR
-						)
-					end)
-					return nil
-				end
-				return { exe, "--stdio" }
-			end
-
-			-- ts_ls
-			vim.lsp.config("ts_ls", {
-				cmd = ts_cmd(), -- 자동 탐색 + mason 폴백
+			-- vtsls (typescript)
+			-- npm 전역:  npm i -g @vtsls/language-server typescript
+			vim.lsp.config("vtsls", {
+				-- mason PATH prepend이면 cmd 생략 가능. 필요시: cmd = { "vtsls", "--stdio" }
 				capabilities = caps,
 				on_attach = on_attach,
 				single_file_support = true,
 				filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
-				-- root_dir은 절대 nil이 나오지 않게 폴백을 충분히 둔다
 				root_dir = function(fname)
 					return util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git")(fname)
 						or util.find_git_ancestor(fname)
 						or vim.loop.cwd()
 				end,
+				settings = {
+					typescript = {
+						updateImportsOnFileMove = { enabled = "always" },
+						referencesCodeLens = { enabled = true },
+						suggest = { completeFunctionCalls = true },
+					},
+					javascript = {
+						updateImportsOnFileMove = { enabled = "always" },
+					},
+				},
 				on_init = function(_, ctx)
 					vim.schedule(function()
-						vim.notify(("[ts_ls] started (root=%s)"):format(ctx.root_dir or "?"), vim.log.levels.INFO)
+						vim.notify(("[vtsls] started (root=%s)"):format(ctx.root_dir or "?"), vim.log.levels.INFO)
 					end)
 				end,
 			})
@@ -239,7 +228,7 @@ return {
 			})
 
 			-- enable
-			for _, name in ipairs({ "ts_ls", "tailwindcss", "eslint", "lua_ls" }) do
+			for _, name in ipairs({ "vtsls", "tailwindcss", "eslint", "lua_ls" }) do
 				vim.lsp.enable(name)
 			end
 
@@ -267,18 +256,14 @@ return {
 					callback = function(ev)
 						-- 이미 붙어 있으면 스킵
 						for _, c in pairs(vim.lsp.get_clients({ bufnr = ev.buf })) do
-							if c.name == "ts_ls" then
+							if c.name == "vtsls" then
 								return
 							end
 						end
-						local cmd = ts_cmd()
-						if not cmd then
-							return
-						end
 						local file = vim.api.nvim_buf_get_name(ev.buf)
 						vim.lsp.start({
-							name = "ts_ls",
-							cmd = cmd,
+							name = "vtsls",
+							cmd = { "vtsls", "--stdio" }, -- mason PATH 우선이면 생략 가능
 							root_dir = ts_root(file),
 							capabilities = caps,
 							single_file_support = true,
@@ -335,10 +320,10 @@ return {
 			automatic_installation = true,
 		},
 	},
+
 	---------------------------------------------------------------------------
 	-- codecompanion AI자동 분석기
 	---------------------------------------------------------------------------
-
 	{
 		"olimorris/codecompanion.nvim",
 		dependencies = {
@@ -347,22 +332,17 @@ return {
 		},
 		opts = {
 			opts = { log_level = "DEBUG" }, -- DEBUG / TRACE
-
 			adapters = {
 				http = {
 					anthropic = function()
 						return require("codecompanion.adapters").extend("anthropic", {
 							env = { api_key = vim.env.ANTHROPIC_API_KEY },
-							-- endpoint = "https://api.anthropic.com/v1/messages", -- 필요시 명시
+							-- endpoint = "https://api.anthropic.com/v1/messages",
 						})
 					end,
-
-					opts = {
-						timeout = 30000, -- ms 단위, API 호출 타임아웃
-					},
+					opts = { timeout = 30000 },
 				},
 			},
-
 			strategies = {
 				chat = {
 					adapter = "anthropic",
@@ -377,10 +357,10 @@ return {
 			},
 		},
 	},
-	---------------------------------------------------------------------------
-	-- 자동정렬
-	---------------------------------------------------------------------------
 
+	---------------------------------------------------------------------------
+	-- 자동정렬 (Conform을 쓰지 않고, 위의 none-ls 설정 유지)
+	---------------------------------------------------------------------------
 	{
 		"stevearc/conform.nvim",
 		opts = {
@@ -391,7 +371,6 @@ return {
 				css = { "prettierd", "prettier" },
 				html = { "prettierd", "prettier" },
 				lua = { "stylua" },
-				-- 필요시 추가…
 			},
 			format_on_save = { lsp_fallback = true, timeout_ms = 2000 },
 		},
