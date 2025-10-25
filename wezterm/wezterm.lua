@@ -81,6 +81,8 @@ table.insert(config.keys, { key = "2", mods = "CMD", action = wezterm.action.Sen
 
 -- Cmd+W → Alt+w  (사이드 닫기)
 table.insert(config.keys, { key = "w", mods = "CMD", action = wezterm.action.SendKey({ key = "w", mods = "ALT" }) })
+-- 줄 복사
+table.insert(config.keys, { key = "d", mods = "CMD", action = wezterm.action.SendKey({ key = "d", mods = "ALT" }) })
 
 -- Cmd+Shift+W → Alt+W  (현재 것만 남기고 나머지 닫기)
 table.insert(
@@ -106,11 +108,11 @@ table.insert(config.keys, {
 	action = wezterm.action.SendString("\x1b\x7f"),
 })
 -- Cmd+d → Alt+j
-table.insert(config.keys, {
-	key = "d",
-	mods = "SUPER",
-	action = wezterm.action.SendKey({ key = "j", mods = "ALT" }),
-})
+--table.insert(config.keys, {
+--	key = "d",
+--	mods = "SUPER",
+--	action = wezterm.action.SendKey({ key = "j", mods = "ALT" }),
+--})
 
 -- Cmd+u → Alt+k
 table.insert(config.keys, {

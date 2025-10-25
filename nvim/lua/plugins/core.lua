@@ -44,7 +44,12 @@ return {
 		config = function()
 			require("neo-tree").setup({
 				close_if_last_window = true,
-
+				window = {
+					mappings = {
+						h = "close_node",
+						l = "open",
+					},
+				},
 				event_handlers = {
 					{
 						event = "file_opened",
@@ -89,6 +94,12 @@ return {
 				},
 
 				filesystem = {
+					window = {
+						mappings = {
+							h = "close_node",
+							l = "open",
+						},
+					},
 					follow_current_file = { enabled = false }, -- 다시 열림 방지
 					use_libuv_file_watcher = true, -- ← 변경 감지 정확도↑ (권장)
 					filtered_items = { hide_gitignored = false, hide_dotfiles = false },

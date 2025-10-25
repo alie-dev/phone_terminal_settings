@@ -220,7 +220,7 @@ map({ "n", "x" }, "<M-a>", "ggVG", { desc = "Select all" })
 map({ "x" }, "c", '"_c', { desc = "Select all" })
 
 -- 줄 복사
-map({ "n", "x" }, "<M-y>", ":t.<CR>", { desc = "Select all" })
+map({ "n", "x" }, "<M-d>", ":t.<CR>", { desc = "Select all" })
 
 -- =========================================================
 -- LSP / Telescope
@@ -377,12 +377,31 @@ map("n", "<leader>t", function()
 end, { silent = true })
 
 map("t", "<leader>tt", "<C-\\><C-n>", { noremap = true, silent = true })
+-- 현재 보고있는 줄번호 + 파일 위치 복사
+-- Normal: path:line
+map("n", "<leader>pw", function()
+	local path = vim.fn.expand("%")
+	local line = vim.fn.line(".")
+	local out = ("%s:%d"):format(path, line)
+	vim.fn.setreg("+", out)
+	print("Copied: " .. out)
+end, { desc = "Copy relative path + line to clipboard" })
+
+-- Visual: path:start-end
+map("x", "<leader>pw", function()
+	local path = vim.fn.expand("%")
+	local a = vim.fn.getpos("v")[2]
+	local b = vim.fn.getpos(".")[2]
+	local s, e = math.min(a, b), math.max(a, b)
+	local out = ("%s:%d-%d"):format(path, s, e)
+	vim.fn.setreg("+", out)
+	print("Copied: " .. out)
+end, { desc = "Copy relative path + visual range to clipboard" })
 
 -- =========================================================
 -- CodeCompanion
 -- =========================================================
 map("v", "q", ":CodeCompanion /buffer ", { desc = "CodeCompanion with buffer command" })
-
 
 map({ "n", "x" }, "<M-2>", function()
 	motions.toggle_chat("left")
