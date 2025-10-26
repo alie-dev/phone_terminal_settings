@@ -7,9 +7,9 @@ if wezterm.config_builder then
 end
 
 config.font = wezterm.font({ family = "MesloLGS Nerd Font Mono", weight = "Regular" })
-config.font_size = 17
+config.font_size = 18
 
-config.line_height = 1.3
+config.line_height = 1.4
 config.colors = {
 	foreground = "#dcdcdc", -- 연한 회색 글자
 	background = "#1e1e1e", -- 딱 Visual Studio Code Dark 같은 검회색
@@ -20,19 +20,21 @@ config.colors = {
 }
 
 -- 탭/창 스타일
+-- set laststatus=3
+config.enable_tab_bar = false
+config.use_resize_increments = true
 config.use_fancy_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = false
+config.hide_tab_bar_if_only_one_tab = true
+config.native_macos_fullscreen_mode = true
 config.window_decorations = "RESIZE"
 config.window_background_opacity = 0.86
 config.macos_window_background_blur = 20
 config.inactive_pane_hsb = { saturation = 0.9, brightness = 0.8 }
 
--- 여백 주기(상단·좌우 살짝 여유)
 config.window_padding = { left = 0, right = 0, top = 0, bottom = 0 }
 
 -- 모든 기본 단축키 제거
 config.disable_default_key_bindings = true
-
 -- 필요한 키만 다시 정의
 config.keys = {
 	-- 복사/붙여넣기
