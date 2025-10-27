@@ -122,7 +122,7 @@ return {
 				topdelete = { text = "▎" },
 				changedelete = { text = "▎" },
 			},
-			word_diff = true,
+			word_diff = false,
 			current_line_blame = false,
 		},
 	},
