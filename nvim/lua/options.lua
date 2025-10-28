@@ -6,6 +6,9 @@ vim.opt.cursorline = true
 vim.opt.laststatus = 3
 vim.opt.cmdheight = 0
 vim.opt.showmode = false
+-- 자동 들여쓰기
+vim.opt.autoindent = true
+vim.opt.smartindent = true
 
 -- 스왑파일 안생기게 (복구 안됌)
 vim.opt.swapfile = false

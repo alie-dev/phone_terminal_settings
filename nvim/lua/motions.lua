@@ -424,6 +424,11 @@ function M.toggle_chat(side) -- "right"|"left"
 	end
 end
 
+function M.get_relative_path()
+	local filepath = vim.fn.expand("%:p") -- full path
+	local root = vim.fn.getcwd() -- 현재 작업 디렉토리 (nvim 실행 경로)
+	return vim.fn.fnamemodify(filepath, ":." .. root)
+end
 -- 비주얼 선택 텍스트 얻기
 --vim.api.nvim_create_user_command("CodeCompanionToggle", M.toggle_chat, {})
 return M

@@ -37,6 +37,8 @@ config.window_padding = { left = 0, right = 0, top = 0, bottom = 0 }
 config.disable_default_key_bindings = true
 -- 필요한 키만 다시 정의
 config.keys = {
+	-- 전체화면
+	{ key = "F18", mods = "NONE", action = wezterm.action.ToggleFullScreen },
 	-- 복사/붙여넣기
 	{ key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
 	{ key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },

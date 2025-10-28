@@ -84,7 +84,8 @@ map("n", "<M-W>", function()
 end, { silent = true, desc = "Close others (sides)" })
 
 -- 빈 줄 추가 / 라인 삭제
-map({ "n", "x" }, "<M-CR>", "o<Esc>", { silent = true, desc = "Add blank line below (stay)" })
+map("n", "<M-CR>", "o<Left><Right><Esc>", { silent = true, desc = "Add blank line below (stay)" })
+map("x", "<M-CR>", "o<Esc>", { silent = true, desc = "Add blank line below (stay)" })
 -- Insert 모드: 현재 줄 아래에 빈 줄 추가 후 insert 모드에서 유지
 map("i", "<M-CR>", function()
 	return "<Esc>o"
@@ -106,27 +107,27 @@ end
 -- =========================================================
 
 -- =========================================================
-map("n", "w", motions.smart_w_normal, { noremap = true, silent = true, desc = "Smart token →" })
-map("x", "w", motions.smart_w_visual, { noremap = true, silent = true, desc = "Smart token →" })
-map("o", "w", motions.smart_w_operator, { noremap = true, silent = true, expr = true, desc = "Smart token →" })
+map("n", "<C-l>", motions.smart_w_normal, { noremap = true, silent = true, desc = "Smart token →" })
+map("x", "<C-l>", motions.smart_w_visual, { noremap = true, silent = true, desc = "Smart token →" })
+map("o", "<C-l>", motions.smart_w_operator, { noremap = true, silent = true, expr = true, desc = "Smart token →" })
 
-map("n", "b", motions.smart_b_normal, { noremap = true, silent = true, desc = "Smart token ←" })
-map("x", "b", motions.smart_b_visual, { noremap = true, silent = true, desc = "Smart token ←" })
-map("o", "b", motions.smart_b_operator, { noremap = true, silent = true, expr = true, desc = "Smart token ←" })
+map("n", "<C-h>", motions.smart_b_normal, { noremap = true, silent = true, desc = "Smart token ←" })
+map("x", "<C-h>", motions.smart_b_visual, { noremap = true, silent = true, desc = "Smart token ←" })
+map("o", "<C-h>", motions.smart_b_operator, { noremap = true, silent = true, expr = true, desc = "Smart token ←" })
 
 -- 라인 시작/끝 이동 (커서만)
 map({ "n", "x", "o" }, "<M-h>", function()
-	vim.cmd("normal! 0")
+	vim.cmd("normal! ^")
 end, { noremap = true, silent = true, desc = "Go line start" })
 map({ "n", "x", "o" }, "<M-l>", function()
-	vim.cmd("normal! $")
+	vim.cmd("normal! g_")
 end, { noremap = true, silent = true, desc = "Go line end" })
 
 -- 라인 전부 선택 확장 (Alt+Shift+H/L)
-map("n", "<M-H>", "v0", { noremap = true, silent = true, desc = "Select to line start" })
-map("x", "<M-H>", "0", { noremap = true, silent = true, desc = "Extend to line start" })
-map("n", "<M-L>", "v$", { noremap = true, silent = true, desc = "Select to line end" })
-map("x", "<M-L>", "$", { noremap = true, silent = true, desc = "Extend to line end" })
+map("n", "<M-H>", "v^", { noremap = true, silent = true, desc = "Select to line start" })
+map("x", "<M-H>", "^", { noremap = true, silent = true, desc = "Extend to line start" })
+map("n", "<M-L>", "vg_", { noremap = true, silent = true, desc = "Select to line end" })
+map("x", "<M-L>", "g_", { noremap = true, silent = true, desc = "Extend to line end" })
 
 -- 명령행
 map({ "n", "x" }, ";", ":", { noremap = true, desc = "Command-line" })
@@ -197,8 +198,6 @@ local function close_others_keep_current()
 		end
 	end
 end
-map("n", "<leader>Q", close_others_keep_current, { silent = true, desc = "Close all others" })
-map("n", "<leader>q", "<cmd>bdelete<CR>", { silent = true, desc = "Close buffer" })
 
 -- 매칭까지 선택
 map("n", "%", function()
@@ -379,22 +378,25 @@ end, { silent = true })
 map("t", "<leader>tt", "<C-\\><C-n>", { noremap = true, silent = true })
 -- 현재 보고있는 줄번호 + 파일 위치 복사
 map("n", "<leader>pw", function()
-	local path = vim.fn.expand("%")
+	local path = motions.get_relative_path()
 	local line = vim.fn.line(".")
 	local out = ("%s:%d"):format(path, line)
-	vim.fn.setreg("+", out .. "\n") -- 클립보드에만 줄바꿈 추가
+	vim.fn.setreg("+", out .. "\n")
 	print("Copied: " .. out)
-end, { desc = "Copy relative path + line to clipboard" })
+end, { desc = "Copy relative path + line" })
 
 map("x", "<leader>pw", function()
-	local path = vim.fn.expand("%")
+	local path = motions.get_relative_path()
 	local a = vim.fn.getpos("v")[2]
 	local b = vim.fn.getpos(".")[2]
 	local s, e = math.min(a, b), math.max(a, b)
 	local out = ("%s:%d-%d"):format(path, s, e)
-	vim.fn.setreg("+", out .. "\n") -- 클립보드에만 줄바꿈 추가
+	vim.fn.setreg("+", out .. "\n")
 	print("Copied: " .. out)
-end, { desc = "Copy relative path + visual range to clipboard" })
+end, { desc = "Copy relative path + visual" })
+
+map("n", "<leader>fs", ":checktime<CR>", { desc = "Sync file update from disk" })
+
 -- =========================================================
 -- CodeCompanion
 -- =========================================================

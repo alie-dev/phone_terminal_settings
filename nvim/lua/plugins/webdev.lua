@@ -178,16 +178,11 @@ return {
 			-- eslint
 			vim.lsp.config("eslint", {
 				capabilities = caps,
-				on_attach = function(client, bufnr)
-					pcall(on_attach, client, bufnr)
-					vim.api.nvim_create_autocmd("BufWritePre", {
-						buffer = bufnr,
-						callback = function()
-							pcall(vim.cmd, "EslintFixAll")
-						end,
-					})
-				end,
+				on_attach = on_attach,
+				-- BufWritePre EslintFixAll 제거 (자동저장과 충돌)
 				root_dir = function(fname)
+					-- Ensure fname is a string (convert buffer number to filename if needed)
+					local filename = type(fname) == "string" and fname or vim.api.nvim_buf_get_name(fname)
 					return util.root_pattern(
 						".eslintrc",
 						".eslintrc.js",
@@ -195,7 +190,7 @@ return {
 						".eslintrc.json",
 						"package.json",
 						".git"
-					)(fname) or util.path.dirname(fname)
+					)(filename) or util.path.dirname(filename)
 				end,
 			})
 
@@ -296,16 +291,7 @@ return {
 			local null_ls = require("null-ls")
 			null_ls.setup({
 				sources = { null_ls.builtins.formatting.prettierd },
-				on_attach = function(client, bufnr)
-					if client.supports_method("textDocument/formatting") then
-						vim.api.nvim_create_autocmd("BufWritePre", {
-							buffer = bufnr,
-							callback = function()
-								vim.lsp.buf.format({ async = false })
-							end,
-						})
-					end
-				end,
+				-- BufWritePre 자동 포맷팅 제거 (자동저장과 충돌)
 			})
 		end,
 	},
@@ -369,7 +355,7 @@ return {
 				html = { "prettierd", "prettier" },
 				lua = { "stylua" },
 			},
-			format_on_save = { lsp_fallback = true, timeout_ms = 2000 },
+			-- format_on_save 제거 (수동 포맷은 <leader>f로 가능)
 		},
 	},
 }
