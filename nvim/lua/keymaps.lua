@@ -221,6 +221,12 @@ map({ "x" }, "c", '"_c', { desc = "Select all" })
 -- 줄 복사
 map({ "n", "x" }, "<M-d>", ":t.<CR>", { desc = "Select all" })
 
+map("n", "<leader>cm", "i/**/<Left><Left>", {
+  noremap = true, silent = true, desc = "Insert /**/ then place cursor inside"
+})
+
+map("n", "r", '"_diwi', { noremap = true, silent = true, desc = "Delete word and enter insert mode" })
+
 -- =========================================================
 -- LSP / Telescope
 -- =========================================================
