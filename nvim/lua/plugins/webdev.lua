@@ -323,7 +323,7 @@ return {
 					anthropic = function()
 						return require("codecompanion.adapters").extend("anthropic", {
 							env = {
-								api_key = "cmd:gpg --decrypt ~/.anthropic-api-key.gpg 2>/dev/null",
+								api_key = vim.env.ANTHROPIC_API_KEY,
 							},
 							--	env = { api_key = os.getenv("ANTHROPIC_API_KEY") },
 							-- endpoint = "https://api.anthropic.com/v1/messages",
