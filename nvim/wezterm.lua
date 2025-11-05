@@ -6,7 +6,12 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
-config.font = wezterm.font{family = "MesloLGS Nerd Font Mono", weight = "Regular"}
+config.font = wezterm.font_with_fallback({
+  { family = "Menlo", weight = "Medium" },
+  { family = "Monaco", weight = "Medium" },
+  { family = "Courier New", weight = "Medium" },
+  { family = "monospace", weight = "Medium" }
+})
 config.font_size = 17
 
 config.line_height = 1.30

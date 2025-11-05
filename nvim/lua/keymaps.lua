@@ -93,6 +93,11 @@ end, { expr = true, silent = true, desc = "Add blank line below and stay in inse
 
 map("n", "<M-BS>", "dd", { silent = true, desc = "Delete line (dd)" })
 
+-- 복사/삭제 동작 커스터마이징
+map("n", "R", '"_ddP', { noremap = true, silent = true, desc = "Replace line with yanked" })
+map("n", "dd", '"_dd', { noremap = true, silent = true, desc = "Delete line (no yank)" })
+map("n", "dD", 'dd', { noremap = true, silent = true, desc = "Delete line (with yank)" })
+
 -- Bufferline 숫자 점프 (Space+1..9)
 for i = 1, 9 do
 	map("n", "<leader>" .. i, function()

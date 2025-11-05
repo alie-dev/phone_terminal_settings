@@ -115,7 +115,7 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "neovim/nvim-lspconfig" },
 		opts = {
-			ensure_installed = { "vtsls", "tailwindcss", "eslint", "lua_ls" },
+			ensure_installed = { "vtsls", "tailwindcss", "eslint", "lua_ls", "svelte" },
 			automatic_installation = true,
 		},
 	},
@@ -141,8 +141,10 @@ return {
 				single_file_support = true,
 				filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 				root_dir = function(fname)
-					return util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git")(fname)
-						or util.find_git_ancestor(fname)
+					-- Ensure fname is a string (convert buffer number to filename if needed)
+					local filename = type(fname) == "string" and fname or vim.api.nvim_buf_get_name(fname)
+					return util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git")(filename)
+						or util.find_git_ancestor(filename)
 						or vim.loop.cwd()
 				end,
 				settings = {
@@ -199,6 +201,8 @@ return {
 				capabilities = caps,
 				on_attach = on_attach,
 				root_dir = function(fname)
+					-- Ensure fname is a string (convert buffer number to filename if needed)
+					local filename = type(fname) == "string" and fname or vim.api.nvim_buf_get_name(fname)
 					return util.root_pattern(
 						".luarc.json",
 						".luarc.jsonc",
@@ -208,7 +212,7 @@ return {
 						"selene.toml",
 						"selene.yml",
 						".git"
-					)(fname) or util.path.dirname(fname) or vim.fn.getcwd()
+					)(filename) or util.path.dirname(filename) or vim.fn.getcwd()
 				end,
 				settings = {
 					Lua = {
@@ -222,8 +226,19 @@ return {
 				},
 			})
 
+			-- svelte
+			vim.lsp.config("svelte", {
+				capabilities = caps,
+				on_attach = on_attach,
+				filetypes = { "svelte" },
+				root_dir = function(fname)
+					local filename = type(fname) == "string" and fname or vim.api.nvim_buf_get_name(fname)
+					return util.root_pattern("package.json", ".git")(filename) or util.path.dirname(filename)
+				end,
+			})
+
 			-- enable
-			for _, name in ipairs({ "vtsls", "tailwindcss", "eslint", "lua_ls" }) do
+			for _, name in ipairs({ "vtsls", "tailwindcss", "eslint", "lua_ls", "svelte" }) do
 				vim.lsp.enable(name)
 			end
 
@@ -241,11 +256,19 @@ return {
 			-- === 자동 attach 보강: 이미 열린 버퍼/새 버퍼 모두 보장 ===
 			do
 				local function ts_root(fname)
-					return util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git")(fname)
-						or util.find_git_ancestor(fname)
+					-- Ensure fname is a string (convert buffer number to filename if needed)
+					local filename = type(fname) == "string" and fname or vim.api.nvim_buf_get_name(fname)
+					return util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git")(filename)
+						or util.find_git_ancestor(filename)
 						or vim.loop.cwd()
 				end
 
+				local function svelte_root(fname)
+					local filename = type(fname) == "string" and fname or vim.api.nvim_buf_get_name(fname)
+					return util.root_pattern("package.json", ".git")(filename) or util.path.dirname(filename)
+				end
+
+				-- vtsls auto-attach for TypeScript/JavaScript
 				vim.api.nvim_create_autocmd("FileType", {
 					pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 					callback = function(ev)
@@ -266,6 +289,27 @@ return {
 					end,
 				})
 
+				-- svelte auto-attach for Svelte files
+				vim.api.nvim_create_autocmd("FileType", {
+					pattern = "svelte",
+					callback = function(ev)
+						-- 이미 붙어 있으면 스킵
+						for _, c in pairs(vim.lsp.get_clients({ bufnr = ev.buf })) do
+							if c.name == "svelte" then
+								return
+							end
+						end
+						local file = vim.api.nvim_buf_get_name(ev.buf)
+						vim.lsp.start({
+							name = "svelte",
+							cmd = { "svelteserver", "--stdio" },
+							root_dir = svelte_root(file),
+							capabilities = caps,
+							single_file_support = true,
+						})
+					end,
+				})
+
 				-- 지금 열려 있는 버퍼가 TS/TSX/JS/JSX면 한 번 트리거
 				if
 					vim.tbl_contains(
@@ -273,6 +317,11 @@ return {
 						vim.bo.filetype
 					)
 				then
+					vim.api.nvim_exec_autocmds("FileType", { buffer = 0 })
+				end
+
+				-- 지금 열려 있는 버퍼가 Svelte면 한 번 트리거
+				if vim.bo.filetype == "svelte" then
 					vim.api.nvim_exec_autocmds("FileType", { buffer = 0 })
 				end
 			end
@@ -353,6 +402,7 @@ return {
 				json = { "prettierd", "prettier" },
 				css = { "prettierd", "prettier" },
 				html = { "prettierd", "prettier" },
+				svelte = { "prettierd", "prettier" },
 				lua = { "stylua" },
 			},
 			-- format_on_save 제거 (수동 포맷은 <leader>f로 가능)
