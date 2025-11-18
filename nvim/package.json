@@ -1,0 +1,14 @@
+{
+  "name": "neovim-config",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Neovim configuration with ESLint Tailwind formatting",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-plugin-better-tailwindcss": "latest",
+    "eslint-plugin-svelte": "latest",
+    "svelte": "latest",
+    "svelte-eslint-parser": "latest"
+  }
+}

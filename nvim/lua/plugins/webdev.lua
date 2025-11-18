@@ -391,19 +391,31 @@ return {
 	},
 
 	---------------------------------------------------------------------------
-	-- 자동정렬 (Conform을 쓰지 않고, 위의 none-ls 설정 유지)
+	-- 자동정렬 (Conform + ESLint)
 	---------------------------------------------------------------------------
 	{
 		"stevearc/conform.nvim",
 		opts = {
 			formatters_by_ft = {
-				javascript = { "prettierd", "prettier" },
-				typescript = { "prettierd", "prettier" },
+				javascript = { "eslint_d", "prettierd", "prettier" },
+				typescript = { "eslint_d", "prettierd", "prettier" },
+				javascriptreact = { "eslint_d", "prettierd", "prettier" },
+				typescriptreact = { "eslint_d", "prettierd", "prettier" },
 				json = { "prettierd", "prettier" },
 				css = { "prettierd", "prettier" },
-				html = { "prettierd", "prettier" },
-				svelte = { "prettierd", "prettier" },
+				html = { "eslint_d", "prettierd", "prettier" },
+				svelte = { "eslint_d", "prettierd", "prettier" },
 				lua = { "stylua" },
+			},
+			-- 전역 ESLint 설정 강제 사용 (프로젝트 설정 무시)
+			formatters = {
+				eslint_d = {
+					prepend_args = function()
+						local config_path = vim.fn.expand("~/.config/nvim/eslint.config.js")
+						-- 항상 전역 설정 사용
+						return { "--config", config_path }
+					end,
+				},
 			},
 			-- format_on_save 제거 (수동 포맷은 <leader>f로 가능)
 		},

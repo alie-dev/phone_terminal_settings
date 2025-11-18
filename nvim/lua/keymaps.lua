@@ -235,6 +235,7 @@ map("n", "<leader>cm", "i/**/<Left><Left>", {
 })
 
 map("n", "r", '"_diwi', { noremap = true, silent = true, desc = "Delete word and enter insert mode" })
+map("x", "r", '"_c', { noremap = true, silent = true, desc = "Delete selection and enter insert mode" })
 
 -- =========================================================
 -- LSP / Telescope
