@@ -51,7 +51,7 @@ map("n", "<M-{>", "<cmd>bprevious<CR>", { silent = true, desc = "Prev buffer" })
 map("n", "<M-}>", "<cmd>bnext<CR>", { silent = true, desc = "Next buffer" })
 
 -- 파일 트리 (WezTerm: Cmd+1 → Alt+1)
-map("n", "<M-1>", function()
+map("n", "<leader>e", function()
 	-- :Neotree 명령 또는 lua 모듈이 있으면 사용, 없으면 netrw
 	if vim.fn.exists(":Neotree") == 2 then
 		vim.cmd("Neotree toggle left reveal_force_cwd")
@@ -230,7 +230,7 @@ map({ "x" }, "c", '"_c', { desc = "Select all" })
 -- 줄 복사
 map({ "n", "x" }, "<M-d>", ":t.<CR>", { desc = "Select all" })
 
-map("n", "<leader>cm", "i/**/<Left><Left>", {
+map("n", "<leader>cm", "i/**\n\n/<Up>", {
   noremap = true, silent = true, desc = "Insert /**/ then place cursor inside"
 })
 
@@ -323,7 +323,7 @@ end, { desc = "Show diagnostics here" })
 map("n", "<leader>dq", vim.diagnostic.setqflist, { desc = "Diagnostics → quickfix" })
 
 -- =========================================================
-map({ "n", "v" }, "<leader>f", function()
+map({ "n", "v" }, "<M-s>", function()
 	local conform = safe_require("conform")
 	if not conform then
 		return
@@ -338,7 +338,9 @@ map({ "n", "v" }, "<leader>f", function()
 		opts.range = { start = { s[1] - 1, s[2] }, ["end"] = { e[1] - 1, e[2] } }
 	end
 	conform.format(opts)
-end, { desc = "Format (file/selection)" })
+	-- 포맷 후 저장
+	vim.cmd("write")
+end, { desc = "Format and Save" })
 
 -- =========================================================
 -- Telescope: 루트 기준 검색
@@ -391,7 +393,8 @@ map("n", "<leader>t", function()
 	vim.cmd("belowright " .. terminal_height .. "split | terminal")
 end, { silent = true })
 
-map("t", "<leader>tt", "<C-\\><C-n>", { noremap = true, silent = true })
+-- 터미널에서 Esc로 노멀 모드 전환
+map("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
 -- 현재 보고있는 줄번호 + 파일 위치 복사
 map("n", "<leader>pw", function()
 	local path = motions.get_relative_path()
@@ -412,20 +415,32 @@ map("x", "<leader>pw", function()
 end, { desc = "Copy relative path + visual" })
 
 map("n", "<leader>fs", ":checktime<CR>", { desc = "Sync file update from disk" })
-
--- =========================================================
--- CodeCompanion
--- =========================================================
-map("v", "q", ":CodeCompanion /buffer ", { desc = "CodeCompanion with buffer command" })
-
-map({ "n", "x" }, "<M-2>", function()
-	motions.toggle_chat("left")
-end, { desc = "Toggle CodeCompanion Chat (left)", silent = true })
-do
-	local tb = safe_require("telescope.builtin")
-	if tb then
-		map("n", "<leader>cP", "<cmd>Telescope codecompanion prompts<CR>", { desc = "CodeCompanion: Browse prompts" })
-	end
-end
-
 -- 참고: 범위 변경 키(-, _)는 webdev.lua의 treesitter 설정에 있음
+
+-- :숫자 숫자 → 라인 범위 Visual Line 선택 (예: :20 30)
+vim.cmd([[
+  command! -nargs=+ Vl call s:SelectLineRange(<f-args>)
+  function! s:SelectLineRange(start, ...)
+    let l:s = str2nr(a:start)
+    let l:e = a:0 > 0 ? str2nr(a:1) : l:s
+    if l:s > l:e
+      let [l:s, l:e] = [l:e, l:s]
+    endif
+    execute l:s
+    execute 'normal! V' . l:e . 'G'
+  endfunction
+]])
+
+-- 명령줄에서 엔터 누를 때 "숫자 숫자" 패턴 감지
+vim.keymap.set("c", "<CR>", function()
+	local cmdtype = vim.fn.getcmdtype()
+	if cmdtype ~= ":" then
+		return "<CR>"
+	end
+	local cmd = vim.fn.getcmdline()
+	local s, e = cmd:match("^(%d+)%s+(%d+)$")
+	if s and e then
+		return "<C-u>Vl " .. s .. " " .. e .. "<CR>"
+	end
+	return "<CR>"
+end, { expr = true })

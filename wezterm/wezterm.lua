@@ -87,7 +87,8 @@ table.insert(config.keys, { key = "2", mods = "CMD", action = wezterm.action.Sen
 table.insert(config.keys, { key = "w", mods = "CMD", action = wezterm.action.SendKey({ key = "w", mods = "ALT" }) })
 -- 줄 복사
 table.insert(config.keys, { key = "d", mods = "CMD", action = wezterm.action.SendKey({ key = "d", mods = "ALT" }) })
-
+-- 자리 정렬 + 저장
+table.insert(config.keys, { key = "s", mods = "CMD", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) })
 -- Cmd+Shift+W → Alt+W  (현재 것만 남기고 나머지 닫기)
 table.insert(
 	config.keys,
