@@ -60,15 +60,6 @@
 - **Space+sg** : 라이브 문자열 검색(루트, 숨김 포함·.git 제외)
 - **Space+sw** : 커서 단어 검색(루트)
 
-## CodeCompanion (AI)
-
-- **Space+cc** : Chat 열기
-- **Option(Visual)+ci** : Inline 편집(선택 영역 수정/치환)
-- **Option(Visual)+cp** : 선택 기반 Prompt 실행
-- **Space+cx** : 진행 중 작업 취소
-- **Space+cL** : 로그 보기
-- **Space+cP** : 프롬프트 프리셋(있을 때)
-
 ---
 
 ### In Termux
@@ -83,5 +74,5 @@
 
 ### 참고
 
-- 일부 키는 플러그인 의존: **Neo-tree**, **bufferline.nvim**, **telescope.nvim**, **telescope-ui-select.nvim**, **conform.nvim**, **CodeCompanion** 등.
+- 일부 키는 플러그인 의존: **Neo-tree**, **bufferline.nvim**, **telescope.nvim**, **telescope-ui-select.nvim**, **conform.nvim** 등.
 - 세부 설정/코드는 리포지토리 설정 파일 참고.

@@ -351,84 +351,10 @@ function M.project_root()
 	return vim.loop.cwd()
 end
 
--- codeCompanion
-local state = { win = nil, buf = nil }
-local WIDTH = math.floor(vim.o.columns * 0.15) -- 사이드바 폭
-
-local function find_chat_window()
-	for _, win in ipairs(vim.api.nvim_list_wins()) do
-		local buf = vim.api.nvim_win_get_buf(win)
-		if vim.bo[buf].filetype == "codecompanion" then
-			return win
-		end
-	end
-end
-
-local function find_chat_buffer()
-	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-		if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "codecompanion" then
-			return buf
-		end
-	end
-end
-
-function M.toggle_chat(side) -- "right"|"left"
-	side = side or "right"
-
-	-- 1) 이미 떠 있으면 닫기
-	local chat_win = find_chat_window()
-	if chat_win then
-		vim.api.nvim_win_close(chat_win, true)
-		return
-	end
-
-	-- 2) 버퍼/창이 없으면 먼저 CodeCompanionChat으로 "창을 생성"
-	local buf = find_chat_buffer()
-	if not buf then
-		vim.cmd("CodeCompanionChat")
-	end
-
-	-- 3) 방금 생긴(또는 기존의) 채팅 창을 찾아서 "그 창 자체"를 옮기고 폭만 조정
-	chat_win = find_chat_window()
-	if chat_win then
-		-- 창을 선택
-		vim.api.nvim_set_current_win(chat_win)
-		-- 원하는 사이드로 이동
-		if side == "left" then
-			vim.cmd("wincmd H")
-		else
-			vim.cmd("wincmd L")
-		end
-		-- 폭 고정
-		vim.wo[chat_win].winfixwidth = true
-		vim.api.nvim_win_set_width(chat_win, WIDTH)
-		return
-	end
-
-	-- 4) 혹시 창은 없는데 버퍼만 있는 희귀 케이스 → 그때만 split 생성
-	buf = find_chat_buffer()
-	if buf then
-		if side == "left" then
-			vim.cmd("topleft vsplit")
-			vim.cmd("wincmd H")
-		else
-			vim.cmd("botright vsplit")
-			vim.cmd("wincmd L")
-		end
-		local win = vim.api.nvim_get_current_win()
-		vim.api.nvim_win_set_buf(win, buf)
-		vim.wo[win].winfixwidth = true
-		vim.api.nvim_win_set_width(win, WIDTH)
-	else
-		vim.notify("CodeCompanion Chat buffer not found", vim.log.levels.WARN)
-	end
-end
-
 function M.get_relative_path()
 	local filepath = vim.fn.expand("%:p") -- full path
 	local root = vim.fn.getcwd() -- 현재 작업 디렉토리 (nvim 실행 경로)
 	return vim.fn.fnamemodify(filepath, ":." .. root)
 end
--- 비주얼 선택 텍스트 얻기
---vim.api.nvim_create_user_command("CodeCompanionToggle", M.toggle_chat, {})
+
 return M

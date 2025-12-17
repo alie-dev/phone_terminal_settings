@@ -94,9 +94,26 @@ end, { expr = true, silent = true, desc = "Add blank line below and stay in inse
 map("n", "<M-BS>", "dd", { silent = true, desc = "Delete line (dd)" })
 
 -- 복사/삭제 동작 커스터마이징
-map("n", "R", '"_ddP', { noremap = true, silent = true, desc = "Replace line with yanked" })
 map("n", "dd", '"_dd', { noremap = true, silent = true, desc = "Delete line (no yank)" })
 map("n", "dD", 'dd', { noremap = true, silent = true, desc = "Delete line (with yank)" })
+
+-- 붙여넣기: p는 덮어쓴 텍스트 복사 안됨, P는 기존처럼
+map("x", "p", '"_dP', { noremap = true, silent = true, desc = "Paste without yanking replaced" })
+map("x", "P", 'p', { noremap = true, silent = true, desc = "Paste with yanking replaced" })
+
+-- 중괄호 이동: [[ → 이전 {, ]] → 다음 } (이미 해당 위치면 이동 안함)
+map({ "n", "x", "o" }, "[[", function()
+	local char = vim.fn.getline("."):sub(vim.fn.col("."), vim.fn.col("."))
+	if char ~= "{" then
+		vim.cmd("normal! [{")
+	end
+end, { noremap = true, silent = true, desc = "Go to previous {" })
+map({ "n", "x", "o" }, "]]", function()
+	local char = vim.fn.getline("."):sub(vim.fn.col("."), vim.fn.col("."))
+	if char ~= "}" then
+		vim.cmd("normal! ]}")
+	end
+end, { noremap = true, silent = true, desc = "Go to next }" })
 
 -- Bufferline 숫자 점프 (Space+1..9)
 for i = 1, 9 do
@@ -387,11 +404,11 @@ map("n", "<leader>sw", function()
 	})
 end, { desc = "Grep word under cursor (root)" })
 
-map("n", "<leader>t", function()
+map("n", "<leader>tt", function()
 	local total_lines = vim.api.nvim_win_get_height(0)
 	local terminal_height = math.floor(total_lines * 0.3) -- 전체의 30%만 터미널로
 	vim.cmd("belowright " .. terminal_height .. "split | terminal")
-end, { silent = true })
+end, { silent = true, desc = "Open terminal" })
 
 -- 터미널에서 Esc로 노멀 모드 전환
 map("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
@@ -444,3 +461,9 @@ vim.keymap.set("c", "<CR>", function()
 	end
 	return "<CR>"
 end, { expr = true })
+
+-- <leader>td → "- [ ] " 입력 후 insert 모드
+map("n", "<leader>td", function()
+	vim.api.nvim_put({ "- [ ] " }, "c", true, true)
+	vim.cmd("startinsert!")
+end, { silent = true, desc = "Insert todo checkbox" })
