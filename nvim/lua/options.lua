@@ -20,6 +20,36 @@ vim.opt.shiftwidth = 2 -- 자동 들여쓰기 폭
 vim.opt.tabstop = 2 -- 탭 표시 폭
 vim.opt.softtabstop = 2
 
+
+
+-- italic 제거하기
+-- Kill ALL italics (keep colors/styles as much as possible)
+local function strip_italics()
+  -- 모든 하이라이트 그룹 이름 가져오기
+  local groups = vim.fn.getcompletion("", "highlight")
+
+  for _, name in ipairs(groups) do
+    -- link면 원본을 못 건드리니 link=false로 실제 값 가져오기
+    local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
+    if ok and type(hl) == "table" and hl.italic then
+      hl.italic = false
+      -- 혹시 모를 legacy 키들 정리(환경 따라 남아있을 수 있음)
+      hl.cterm = nil
+      hl.gui = nil
+      pcall(vim.api.nvim_set_hl, 0, name, hl)
+    end
+  end
+end
+
+-- colorscheme가 italic 다시 넣는 걸 매번 즉시 제거
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter", "UIEnter" }, {
+  callback = function()
+    strip_italics()
+  end,
+})
+
+
+
 -- 🔄 외부 파일 변경 자동 반영 (libuv 파일 감시)
 vim.opt.autoread = true
 
